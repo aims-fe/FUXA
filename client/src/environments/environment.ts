@@ -5,5 +5,6 @@ export const environment = {
   apiEndpoint: null,
   apiPort: 1881,
   serverEnabled: true,
-  type: null
+  type: null,
+  useHash: true
 };
