@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators';
 
 import { AuthService } from '../_services/auth.service';
 import { ProjectService } from '../_services/project.service';
+import utils from '../../utils';
 
 const TOKEN_HEADER_KEY = 'x-access-token';
 const USER_HEADER_KEY = 'x-auth-user';
@@ -30,6 +31,10 @@ export class AuthInterceptor implements HttpInterceptor {
                 req = req.clone({ headers: req.headers.set(TOKEN_HEADER_KEY, token) });
             }
         }
+        /* #region 定制化修改 */
+        req = utils.serviceUtils.interceptRequest(req);
+        /* #endregion */
+
         return next.handle(req).pipe(
             tap((event: HttpEvent<any>) => {
             }, (err: any) => {

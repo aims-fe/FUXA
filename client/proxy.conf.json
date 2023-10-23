@@ -2,5 +2,14 @@
     "/resources": {
       "target": "http://localhost:1881",
       "secure": false
+    },
+    "/api-fuxa": {
+      "target": "http://192.168.17.49:9900",
+      "changeOrigin": true
+    },
+    "/socket.io": {
+      "target": "http://192.168.17.49:9900",
+      "changeOrigin": true,
+      "ws": true
     }
 }

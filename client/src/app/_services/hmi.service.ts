@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService, UserProfile } from './auth.service';
+import utils from '../../utils';
 
 @Injectable()
 export class HmiService {
@@ -167,7 +168,11 @@ export class HmiService {
             return;
         }
         this.socket?.close();
-        this.socket = io(`${this.endPointConfig}/?token=${token}`);
+        // #region 定制化修改
+        // this.socket = io(`${this.endPointConfig}/?token=${token}`);
+        this.socket = io(`${this.endPointConfig}/?access_token=${utils.LocationSearch.getInstance().getURLSearchParam('access_token')}`);
+        // #regionend
+
         this.socket.on('connect', () => {
             this.onServerConnection$.next(true);
         });

@@ -8,6 +8,11 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/lint/lint';
 
+// #region 定制化修改
+import utils from './utils';
+utils.LocationSearch.getInstance();
+// #regionend
+
 if (environment.production) {
   enableProdMode();
 }
