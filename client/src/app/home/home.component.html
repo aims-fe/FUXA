@@ -1,4 +1,5 @@
-<div *ngIf="isLoading" style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;background-color:rgba(0,0,0,0.2); z-index: 99999;">
+<!-- NOTE: 定制化修改，让异常的 mask 透明 -->
+<div *ngIf="isLoading" style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;background-color:rgba(0,0,0,0); z-index: 99999;">
 	<mat-progress-bar mode="indeterminate" color="warn" style="position: absolute; top: 0px; left: 0px; right: 0px; z-index: 99999;">
 	</mat-progress-bar>
 </div>
@@ -8,14 +9,15 @@
 		<mat-icon>block</mat-icon>
 	</div>
 </div>
-<mat-sidenav-container class="sidenav-container" [hasBackdrop]="false">
+<mat-sidenav-container class="sidenav-container" [hasBackdrop]="false" style="background-color: transparent;">
 	<mat-sidenav #matsidenav *ngIf="showNavigation && showSidenav" class="sidenav" [mode]="showSidenav">
 		<app-sidenav #sidenav [sidenav]="matsidenav" (goToPage)="onGoToPage($event)" (goToLink)="onGoToLink($event)"></app-sidenav>
 	</mat-sidenav>
 	<mat-sidenav-content [style.background-color]="backgroudColor" (click)="checkToCloseSideNav()">
-		<div *ngIf="showNavigation" class="header" [style.background-color]="layoutHeader.bkcolor" [style.color]="layoutHeader.fgcolor">
+		<!-- NOTE: 定制化修改，强制隐藏导航 -->
+		<div *ngIf="showNavigation" class="header" [style.background-color]="layoutHeader.bkcolor" [style.color]="layoutHeader.fgcolor" style="display: none;">
 			<div *ngIf="showSidenav && showSidenav !== 'side'" class="sidenav-toogle">
-				<button mat-icon-button 
+				<button mat-icon-button
 					(click)="$event.stopPropagation(); (matsidenav.opened) ? matsidenav.close() : matsidenav.open()">
 					<mat-icon aria-label="Menu">menu</mat-icon>
 				</button>
@@ -25,7 +27,7 @@
 					<ng-container *ngSwitchCase="'button'">
 						<button mat-raised-button
 								[id]="item.id"
-								[style.background-color]="item.bkcolor ?? layoutHeader.bkcolor" 
+								[style.background-color]="item.bkcolor ?? layoutHeader.bkcolor"
 								[style.color]="item.fgcolor ?? layoutHeader.fgcolor"
 								[style.fontFamily]="layoutHeader.fontFamily"
 								[style.fontSize]="layoutHeader.fontSize + 'px !important'"
@@ -37,7 +39,7 @@
 					<ng-container *ngSwitchCase="'label'">
 						<button mat-button
 								[id]="item.id"
-								[style.background-color]="item.bkcolor ?? layoutHeader.bkcolor" 
+								[style.background-color]="item.bkcolor ?? layoutHeader.bkcolor"
 								[style.color]="item.fgcolor ?? layoutHeader.fgcolor"
 								[style.fontFamily]="layoutHeader.fontFamily"
 								[style.fontSize]="layoutHeader.fontSize + 'px !important'"
@@ -49,7 +51,7 @@
 					<ng-container *ngSwitchCase="'image'">
 						<button mat-icon-button
 								[id]="item.id"
-								[style.background-color]="item.bkcolor ?? layoutHeader.bkcolor" 
+								[style.background-color]="item.bkcolor ?? layoutHeader.bkcolor"
 								[style.color]="item.fgcolor ?? layoutHeader.fgcolor"
 								[style.marginLeft.px]="item.marginLeft"
 								[style.marginRight.px]="item.marginRight">

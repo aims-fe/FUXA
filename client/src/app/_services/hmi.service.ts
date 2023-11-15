@@ -12,7 +12,10 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService, UserProfile } from './auth.service';
+import { ASmartService } from './asmart.service';
+
 import utils from '../../utils';
+import equipmentUtils from '../../utils/equipmentUtils';
 
 @Injectable()
 export class HmiService {
@@ -38,6 +41,8 @@ export class HmiService {
     variables = {};
     alarms = { highhigh: 0, high: 0, low: 0, info: 0 };
     private socket;
+    private equips = {};
+    private asmartSocket;
     private endPointConfig: string = EndPointApi.getURL();//"http://localhost:1881";
     private bridge: any = null;
 
@@ -47,18 +52,21 @@ export class HmiService {
     private viewsTagsSubscription = [];
 
     constructor(public projectService: ProjectService,
+        public asmartService: ASmartService,
         private translateService: TranslateService,
         private authService: AuthService,
         private toastr: ToastrService) {
 
-        this.initSocket();
+        // this.initSocket();
+        this.initASmartSocket();
 
         this.projectService.onLoadHmi.subscribe(() => {
             this.hmi = this.projectService.getHmi();
+            this.updateEquips(this.projectService.getDevices());
         });
 
         this.authService.currentUser$.subscribe((userProfile: UserProfile) => {
-           this.initSocket(userProfile?.token);
+        //    this.initSocket(userProfile?.token);
         });
     }
 
@@ -170,7 +178,9 @@ export class HmiService {
         this.socket?.close();
         // #region 定制化修改
         // this.socket = io(`${this.endPointConfig}/?token=${token}`);
-        this.socket = io(`${this.endPointConfig}/?access_token=${utils.LocationSearch.getInstance().getURLSearchParam('access_token')}`);
+        this.socket = io(`${this.endPointConfig}?access_token=${utils.LocationSearch.getInstance().getURLSearchParam('access_token')}`, {
+            path: '/socket.io'
+        });
         // #regionend
 
         this.socket.on('connect', () => {
@@ -562,6 +572,101 @@ export class HmiService {
                 break;
         }
     }
+
+    public initASmartSocket() {
+        // check to init socket io
+        if (!environment.serverEnabled) {
+            return;
+        }
+        this.asmartSocket?.close();
+        this.asmartSocket = io(`${this.endPointConfig}?access_token=${utils.LocationSearch.getInstance().getURLSearchParam('access_token')}`, {
+            path: environment.asmartSocketIO
+        });
+
+        this.asmartSocket.on('connect', () => {
+            this.onServerConnection$.next(true);
+            this.updateEquips(this.projectService.getDevices());
+        });
+        this.asmartSocket.on('disconnect', () => {
+            this.onServerConnection$.next(false);
+        });
+
+
+        this.asmartSocket.on('equipment.measure', this.onEquipMeasure);
+
+        this.asmartSocket.on('equipment.metric', (message) => {
+            debugger;
+        });
+
+        this.asmartSocket.on('equipment.status', () => {
+            debugger;
+            // 更新实时数据
+        });
+    }
+
+    private updateEquips(devices){
+        const prevEqupis = JSON.parse(JSON.stringify(this.equips));
+        const nextEqupis = {};
+        const addedCodes = [];
+        const removedCodes = [];
+        const ids = [];
+        for (let id in devices) {
+            const device = devices[id];
+            if (device?.type !== DeviceType.ASmartEquipment){
+                continue;
+            }
+            ids.push(id);
+            nextEqupis[id] = JSON.parse(JSON.stringify(device));
+            if (prevEqupis[id]) {
+                delete prevEqupis[id];
+            } else {
+                addedCodes.push(device.property.address);
+            }
+        }
+        for (let id in prevEqupis) {
+            removedCodes.push(prevEqupis[id].property.address);
+        }
+        if ((0 === addedCodes.length && 0 === removedCodes.length) || true !== this.asmartSocket?.connected) {
+            return;
+        }
+        if (removedCodes.length) {
+            this.asmartSocket.emit('equipment.measure.remove', JSON.stringify({equipmentCodes:removedCodes}));
+        }
+        if (addedCodes.length) {
+            this.asmartSocket.emit('equipment.measure.add', JSON.stringify({equipmentCodes:addedCodes}));
+
+            addedCodes.forEach(code => this.getEquipValues(code)) ;
+        }
+        ids.forEach((id) => this.onDeviceChanged?.emit({ id, status: 'connect-ok' } as any));
+        this.equips = nextEqupis;
+    }
+
+    getEquipValues(equipCode){
+        this.asmartService.getEquipValues(equipCode).subscribe((data) => {
+            console.log(data);
+            equipmentUtils.forEachMeasureProp(data, (val) => {
+                this.updateEquipValue(val);
+            });
+        });
+    }
+
+    updateEquipValue(value){
+        if (!this.variables[value.id]) {
+            this.variables[value.id] = new Variable(value.id, null, null);
+        }
+        this.variables[value.id].value = value.value;
+        this.variables[value.id].timestamp = value.timestamp;
+        console.log(value.id);
+        this.setSignalValue(this.variables[value.id]);
+    }
+
+    onEquipMeasure = (message) => {
+        equipmentUtils.forEachMeasureMsg(message, (prop) => {
+            this.updateEquipValue(prop);
+        });
+    };
+
+
 }
 
 class ViewSignalGaugeMap {

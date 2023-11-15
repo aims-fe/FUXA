@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DevicePropertyComponent } from './../device-property/device-property.component';
 import { ProjectService } from '../../_services/project.service';
+import { ASmartService } from '../../_services/asmart.service';
 import { PluginService } from '../../_services/plugin.service';
 import { Device, DeviceType, DeviceNetProperty, DEVICE_PREFIX, DeviceViewModeType, DeviceConnectionStatusType } from './../../_models/device';
 import { Utils } from '../../_helpers/utils';
@@ -64,18 +65,22 @@ export class DeviceMapComponent implements OnInit, OnDestroy, AfterViewInit {
     dirty = false;
     domArea: any;
 
+    equips = [];
+
     constructor(private dialog: MatDialog,
         private translateService: TranslateService,
         private elementRef: ElementRef,
         private appService: AppService,
         private pluginService: PluginService,
-        private projectService: ProjectService) {
+        private projectService: ProjectService,
+        private asmartService: ASmartService) {
         this.domArea = this.elementRef.nativeElement.parent;
     }
 
     ngOnInit() {
         this.loadCurrentProject();
         this.loadAvailableType();
+        this.loadAllEquips();
         this.subscriptionPluginsChange = this.pluginService.onPluginsChanged.subscribe(event => {
             this.loadAvailableType();
         });
@@ -144,9 +149,17 @@ export class DeviceMapComponent implements OnInit, OnDestroy, AfterViewInit {
             this.plugins.push(DeviceType.WebAPI);
             this.plugins.push(DeviceType.MQTTclient);
             this.plugins.push(DeviceType.internal);
+            this.plugins.push(DeviceType.ASmartEquipment);
         } else {
             this.plugins.push(DeviceType.internal);
         }
+    }
+
+    loadAllEquips(){
+        this.equips = [];
+        this.asmartService.queryAllEquips().subscribe((equips: any) => {
+            this.equips = equips;
+        });
     }
 
     addDevice() {
@@ -465,7 +478,7 @@ export class DeviceMapComponent implements OnInit, OnDestroy, AfterViewInit {
         let dialogRef = this.dialog.open(DevicePropertyComponent, {
             panelClass: 'dialog-property',
             data: {
-                device: tempdevice, remove: toremove, exist: exist, availableType: this.plugins,
+                device: tempdevice, remove: toremove, exist: exist, availableType: this.plugins, equips: this.equips,
                 projectService: this.projectService
             },
             position: { top: '60px' }
@@ -505,7 +518,15 @@ export class DeviceMapComponent implements OnInit, OnDestroy, AfterViewInit {
                             device.property.connectionOption = tempdevice.property.connectionOption;
                         }
                     }
-                    this.projectService.setDevice(device, olddevice, result.security);
+                    if (device.type === DeviceType.ASmartEquipment) {
+                        this.asmartService.getEquipTags(device.property.address).subscribe((tags) => {
+                            device.tags = tags;
+                            this.projectService.setDevice(device, olddevice, result.security);
+                        });
+                    } else{
+                        this.projectService.setDevice(device, olddevice, result.security);
+                    }
+
                 }
                 this.loadDevices();
             }

@@ -9,6 +9,8 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ProjectService, SaveMode } from '../_services/project.service';
+import { ASmartService } from '../_services/asmart.service';
+
 import { Hmi, View, GaugeSettings, SelElement, LayoutSettings, ViewType, ISvgElement, GaugeProperty } from '../_models/hmi';
 import { WindowRef } from '../_helpers/windowref';
 import { GaugePropertyComponent, GaugeDialogType } from '../gauges/gauge-property/gauge-property.component';
@@ -114,6 +116,7 @@ export class EditorComponent implements OnInit, AfterViewInit, OnDestroy {
     private subscriptionLoad: Subscription;
 
     constructor(private projectService: ProjectService,
+        private asmartService: ASmartService,
         private winRef: WindowRef,
         public dialog: MatDialog,
         private changeDetector: ChangeDetectorRef,
@@ -833,6 +836,18 @@ export class EditorComponent implements OnInit, AfterViewInit, OnDestroy {
                 reader.readAsDataURL(event.target.files[0]);
             }
         }
+    }
+
+    onSetImageAsLinkV2(event){
+        const file = event?.target?.files?.[0];
+        if (!file){
+            console.log('不应该进入的分支');
+            return;
+        }
+        this.asmartService.uploadFile(file).subscribe((result: any) => {
+            this.ctrlInitParams = result.data.path;
+            this.setMode('own_ctrl-image');
+        });
     }
 
     /**

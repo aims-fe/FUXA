@@ -49,6 +49,7 @@ import { DevicePropertyComponent } from './device/device-property/device-propert
 import { TagPropertyComponent } from './device/tag-property/tag-property.component';
 import { TagOptionsComponent } from './device/tag-options/tag-options.component';
 import { TopicPropertyComponent } from './device/topic-property/topic-property.component';
+import { EquipPropertyComponent } from './device/equip-property/equip-property.component';
 import { DeviceListComponent, DialogTagName } from './device/device-list/device-list.component';
 import { DeviceMapComponent } from './device/device-map/device-map.component';
 import { FuxaViewComponent } from './fuxa-view/fuxa-view.component';
@@ -66,6 +67,7 @@ import { ResWebApiService } from './_services/rcgi/reswebapi.service';
 import { ResDemoService } from './_services/rcgi/resdemo.service';
 import { ResClientService } from './_services/rcgi/resclient.service';
 import { ProjectService } from './_services/project.service';
+import { ASmartService } from './_services/asmart.service';
 import { HmiService } from './_services/hmi.service';
 import { AppService } from './_services/app.service';
 import { TutorialComponent } from './help/tutorial/tutorial.component';
@@ -194,6 +196,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         TagPropertyComponent,
         TagOptionsComponent,
         TopicPropertyComponent,
+        EquipPropertyComponent,
         DevicePropertyComponent,
         DeviceWebapiPropertyDialogComponent,
         LayoutPropertyComponent,
@@ -347,6 +350,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         RcgiService,
         AppService,
         ProjectService,
+        ASmartService,
         UserService,
         DiagnoseService,
         CommandService,
@@ -372,6 +376,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         Define,
         AuthGuard,
         ToastNotifierService,
+        MyFileService,
         MyFileService,
         {provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults}
     ],

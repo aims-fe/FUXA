@@ -1,15 +1,34 @@
 {
-    "/resources": {
-      "target": "http://localhost:1881",
-      "secure": false
-    },
     "/api-fuxa": {
-      "target": "http://192.168.17.49:9900",
-      "changeOrigin": true
+        "target": "http://192.168.17.49:9900",
+        "changeOrigin": true
     },
-    "/socket.io": {
-      "target": "http://192.168.17.49:9900",
-      "changeOrigin": true,
-      "ws": true
+    "/api-superconf": {
+        "target": "http://192.168.17.49:9900",
+        "changeOrigin": true
+    },
+    "/api-urms": {
+        "target": "http://192.168.17.49:9900",
+        "changeOrigin": true
+    },
+    "/api-file": {
+        "target": "http://192.168.17.49:9900",
+        "changeOrigin": true
+    },
+    "/api-monitor": {
+        "target": "http://192.168.17.49:9900",
+        "changeOrigin": true
+    },
+    "/asmart/files": {
+        "target": "http://192.168.16.93:9000",
+        "changeOrigin": true
+    },
+    "/asmart/socket.io": {
+        "target": "http://192.168.17.49:9900",
+        "secure": false,
+        "ws": true,
+        "pathRewrite": {
+            "^/asmart/socket.io": "/socket.io"
+        }
     }
 }

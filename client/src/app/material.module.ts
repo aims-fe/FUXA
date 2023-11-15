@@ -31,6 +31,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatTreeModule } from '@angular/material/tree';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 import { CdkTableModule } from '@angular/cdk/table';
@@ -45,6 +46,7 @@ import { CdkTableModule } from '@angular/cdk/table';
         MatCheckboxModule,
         MatChipsModule,
         MatStepperModule,
+        MatTreeModule,
         MatDatepickerModule,
         MatMomentDateModule,
         MatDialogModule,
@@ -79,6 +81,7 @@ import { CdkTableModule } from '@angular/cdk/table';
         MatCheckboxModule,
         MatChipsModule,
         MatStepperModule,
+        MatTreeModule,
         MatDatepickerModule,
         MatMomentDateModule,
         MatDialogModule,

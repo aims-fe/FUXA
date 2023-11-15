@@ -16,7 +16,6 @@ import { ScriptListComponent } from './scripts/script-list/script-list.component
 import { TextListComponent } from './text-list/text-list.component';
 import { DEVICE_READONLY } from './_models/hmi';
 import { ReportListComponent } from './reports/report-list/report-list.component';
-import { environment } from '../environments/environment';
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent},//, canActivate: [AuthGuard] },
@@ -40,4 +39,4 @@ const appRoutes: Routes = [
     { path: '**', redirectTo: '' }
 ];
 
-export const routing = RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy', useHash: environment?.useHash });
+export const routing = RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' });

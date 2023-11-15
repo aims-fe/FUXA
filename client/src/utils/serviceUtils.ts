@@ -7,8 +7,7 @@ function replaceURL(req: HttpRequest<any>){
   const origin = window.location.origin;
 
   const url = new URL(req.url);
-  // 修改成 api 网关的地址，用于鉴权
-  const pathname = url.pathname.replace('/api/', '/api-fuxa/');
+  const pathname = url.pathname.replace(/^\/api\//, '/api-superconf/fuxa/');
 
   // 将页面初始化传入的参数透传给后端
   const searchParams = LocationSearch.getInstance().getURLSearchParams();

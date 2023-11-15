@@ -13,6 +13,8 @@
 .work-editor {
     background-color:#FFFFFF;
     height: calc(100% - (46px));
+    /* NOTE: 定制化修改 */
+    height: 100%;
     min-width: 800px;
 }
 
@@ -39,4 +41,6 @@
     color: rgba(255,255,255,1);
     background-color: rgba(68,138,255, 0);
     /* background-color: rgba(0,0,0,0.9); */
+    /* NOTE: 定制化修改 */
+    display: none;
 }
