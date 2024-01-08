@@ -33,7 +33,6 @@ bower_components
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
-dist/
 
 # Dependency directories
 node_modules/
@@ -56,7 +55,6 @@ typings/
 
 # Yarn Integrity file
 .yarn-integrity
-yarn.lock
 
 # dotenv environment variables file
 .env
@@ -91,6 +89,3 @@ test/
 server/_appdata
 #server/package-lock.json
 #client/package-lock.json
-
-dist/
-*.zip

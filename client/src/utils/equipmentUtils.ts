@@ -96,7 +96,7 @@ function forEachMeasureProp(
                 }) => {
                     callback({
                         id: genIdByCodes([
-                            'equipments',
+                            'equipment',
                             realtime.equipmentCode,
                             measureCode,
                             propCode,
@@ -139,7 +139,7 @@ function forEachMetric(
         ({ metricCode, metricName, label, unit }) => {
             callback({
                 id: genIdByCodes([
-                    'equipments',
+                    'equipment',
                     realtime.equipmentCode,
                     metricCode,
                 ]),
@@ -171,7 +171,7 @@ function forEachMeasureMsg(msg: MeasureMsg[], callback) {
         props.forEach(({ propValue, propCode }) => {
             callback({
                 id: genIdByCodes([
-                    'equipments',
+                    'equipment',
                     equipmentCode,
                     measureCode,
                     propCode,

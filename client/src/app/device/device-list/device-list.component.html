@@ -21,9 +21,10 @@
         <!-- Checkbox Column -->
         <ng-container matColumnDef="select">
             <mat-header-cell *matHeaderCellDef [ngClass]="'selectidthClass'">
-                <button *ngIf="!readonly && isDeviceToEdit" mat-icon-button (click)="onAddTag()" class="remove" matTooltip="{{'device.list-add' | translate}}">
+                <!-- NOTE: 定制化修改，隐藏增加标签功能 -->
+                <!-- <button *ngIf="!readonly && isDeviceToEdit" mat-icon-button (click)="onAddTag()" class="remove" matTooltip="{{'device.list-add' | translate}}">
                     <mat-icon>add</mat-icon>
-                </button>
+                </button> -->
             </mat-header-cell>
             <mat-cell *matCellDef="let element" [ngClass]="'selectidthClass'">
                 <button mat-icon-button (click)="onEditRow(element)" class="remove" matTooltip="{{'device.list-edit' | translate}}"
@@ -72,7 +73,7 @@
         <!-- Value Column -->
         <ng-container matColumnDef="value">
             <mat-header-cell *matHeaderCellDef mat-sort-header> {{'device.list-value' | translate}} </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.value}} </mat-cell>
+            <mat-cell *matCellDef="let element" matTooltip="{{element.value}}"> {{element.value}} </mat-cell>
         </ng-container>
 
         <!-- Timestamp Column -->
@@ -80,7 +81,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> {{'device.list-timestamp' | translate}} </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.timestamp | date : 'dd-MM-yyyy HH:mm:ss' }} </mat-cell>
         </ng-container>
-        
+
         <!-- Logger Column -->
         <ng-container matColumnDef="logger">
             <mat-header-cell *matHeaderCellDef mat-sort-header> </mat-header-cell>
@@ -108,18 +109,18 @@
         <ng-container matColumnDef="options">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button mat-icon-button 
+                <button mat-icon-button
                         [matMenuTriggerFor]="options">
                     <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #options="matMenu" xPosition="before">
-                    <button *ngIf="!readonly && deviceSelected.type !== deviceType.internal" 
+                    <button *ngIf="!readonly && deviceSelected.type !== deviceType.internal"
                             mat-menu-item
                             class="context-menu"
                             (click)="onEditOptions(element)">
                         {{'device.list-options' | translate}}
                     </button>
-                    <button mat-menu-item 
+                    <button mat-menu-item
                             class="context-menu"
                             (click)="onCopyTagToClipboard(element)">
                         {{'device.list-clipboard' | translate}}
@@ -131,14 +132,14 @@
         <!-- Button remove Column -->
         <ng-container matColumnDef="remove">
             <mat-header-cell *matHeaderCellDef>
-                <button *ngIf="!readonly" mat-icon-button (click)="onRemoveAll()" class="remove" matTooltip="{{'device.list-remove-all' | translate}}">
+                <!-- <button *ngIf="!readonly" mat-icon-button (click)="onRemoveAll()" class="remove" matTooltip="{{'device.list-remove-all' | translate}}">
                     <mat-icon>clear</mat-icon>
-                </button>
+                </button> -->
             </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button *ngIf="!readonly" mat-icon-button (click)="$event.stopPropagation();onRemoveRow(element)" class="remove" matTooltip="{{'device.list-remove' | translate}}">
+                <!-- <button *ngIf="!readonly" mat-icon-button (click)="$event.stopPropagation();onRemoveRow(element)" class="remove" matTooltip="{{'device.list-remove' | translate}}">
                     <mat-icon>clear</mat-icon>
-                </button>
+                </button> -->
             </mat-cell>
         </ng-container>
 

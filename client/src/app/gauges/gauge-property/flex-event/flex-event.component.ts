@@ -15,6 +15,7 @@ import { Script, ScriptParam, SCRIPT_PARAMS_MAP } from '../../../_models/script'
 
 import { Utils } from '../../../_helpers/utils';
 import { HtmlInputComponent } from '../../controls/html-input/html-input.component';
+import { HtmlSelectComponent } from '../../controls/html-select/html-select.component';
 
 
 @Component({
@@ -42,6 +43,7 @@ export class FlexEventComponent implements OnInit {
     eventWithPosition = [Utils.getEnumKey(GaugeEventActionType, GaugeEventActionType.oncard),
                          Utils.getEnumKey(GaugeEventActionType, GaugeEventActionType.onwindow),
                          Utils.getEnumKey(GaugeEventActionType, GaugeEventActionType.oniframe)];
+    cardDestination = Utils.getEnumKey(GaugeEventActionType, GaugeEventActionType.onwindow);
 
     constructor(private translateService: TranslateService) {
     }
@@ -49,6 +51,8 @@ export class FlexEventComponent implements OnInit {
     ngOnInit() {
         if (this.data.settings.type === HtmlInputComponent.TypeTag) {
             this.eventType[Utils.getEnumKey(GaugeEventType, GaugeEventType.enter)] = this.translateService.instant(GaugeEventType.enter);
+        } else if (this.data.settings.type === HtmlSelectComponent.TypeTag) {
+            this.eventType[Utils.getEnumKey(GaugeEventType, GaugeEventType.select)] = this.translateService.instant(GaugeEventType.select);
         } else {
             this.eventType[Utils.getEnumKey(GaugeEventType, GaugeEventType.click)] = this.translateService.instant(GaugeEventType.click);
             this.eventType[Utils.getEnumKey(GaugeEventType, GaugeEventType.mousedown)] = this.translateService.instant(GaugeEventType.mousedown);
@@ -171,6 +175,15 @@ export class FlexEventComponent implements OnInit {
 
     setScriptParam(scriptParam: ScriptParam, event) {
         scriptParam.value = event.variableId;
+    }
+
+    destinationWithHideClose(action: GaugeEventActionType) {
+        return action === Utils.getEnumKey(GaugeEventActionType, GaugeEventActionType.onwindow) ||
+            action === Utils.getEnumKey(GaugeEventActionType, GaugeEventActionType.ondialog);
+    }
+
+    isEnterOrSelect(type: string) {
+        return type === 'enter' || type === 'select';
     }
 
     private addEvent(ge: GaugeEvent) {

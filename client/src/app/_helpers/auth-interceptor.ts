@@ -36,12 +36,14 @@ export class AuthInterceptor implements HttpInterceptor {
         /* #endregion */
 
         return next.handle(req).pipe(
+            /* #region 定制化修改，处理 ASmart 接口与 FUXA 接口的差异 */
             map((event: HttpEvent<any>) => {
                 if (event instanceof HttpResponse) {
                     const modEvent = event.clone({ body: event.body?.data || event.body });
                     return modEvent;
                 }
             }),
+            /* #endregion */
             tap((event: HttpEvent<any>) => {
             }, (err: any) => {
                 if (err instanceof HttpErrorResponse) {

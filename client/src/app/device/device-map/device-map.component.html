@@ -24,7 +24,7 @@
             <!-- <mat-icon (click)="onEditDevice(server)" class="device-icon device-edit" >edit</mat-icon> -->
             <button *ngIf="!readonly" mat-icon-button (click)="onListDevice(server)" class="device-icon device-list mat-button-sm" [style.right.px]="2" matTooltip="{{'device.property-tags' | translate}}">
                 <mat-icon>link</mat-icon>
-            </button>         
+            </button>
         </div>
 
         <div *ngFor="let flow of devicesValue('flow'); index as i" class="node-flow" [style.color]="(flow.enabled) ? '#000000' : '#828282'"
@@ -37,12 +37,14 @@
             <button *ngIf="!readonly" mat-icon-button (click)="onListDevice(flow)" class="device-list mat-button-sm" [style.right.px]="(readonly) ? 0 : 30" matTooltip="{{'device.property-tags' | translate}}">
                 <mat-icon>link</mat-icon>
             </button>
-            <button *ngIf="!readonly" mat-icon-button (click)="onEditDevice(flow)" class="device-edit mat-button-sm" matTooltip="{{'device.property-edit' | translate}}">
+            <!-- #region 定制化修改 -->
+            <!-- <button *ngIf="!readonly" mat-icon-button (click)="onEditDevice(flow)" class="device-edit mat-button-sm" matTooltip="{{'device.property-edit' | translate}}">
                 <mat-icon style="font-size: 17px">edit</mat-icon>
             </button>
             <button *ngIf="!readonly" mat-icon-button (click)="onRemoveDevice(flow)" class="device-delete mat-button-sm" matTooltip="{{'device.property-remove' | translate}}">
                 <mat-icon style="font-size: 17px">clear</mat-icon>
-            </button>
+            </button> -->
+            <!-- #endregion -->
         </div>
 
         <div *ngFor="let device of devicesValue(); index as i" [ngClass]="getNodeClass(device)" [style.color]="(device.enabled) ? '#FFFFFF' : '#C5C5C5'"
@@ -55,12 +57,14 @@
             <button *ngIf="!readonly" mat-icon-button (click)="onListDevice(device)" class="device-list mat-button-sm" [style.right.px]="(readonly) ? 0 : 30" matTooltip="{{'device.property-tags' | translate}}">
                 <mat-icon>link</mat-icon>
             </button>
-            <button *ngIf="!readonly" mat-icon-button (click)="onEditDevice(device)" class="device-edit mat-button-sm" matTooltip="{{'device.property-edit' | translate}}">
+            <!-- #region 定制化修改 -->
+            <!-- <button *ngIf="!readonly" mat-icon-button (click)="onEditDevice(device)" class="device-edit mat-button-sm" matTooltip="{{'device.property-edit' | translate}}">
                 <mat-icon style="font-size: 17px">edit</mat-icon>
             </button>
             <button *ngIf="!readonly" mat-icon-button (click)="onRemoveDevice(device)" class="device-delete mat-button-sm" matTooltip="{{'device.property-remove' | translate}}">
                 <mat-icon style="font-size: 17px">clear</mat-icon>
-            </button>
+            </button> -->
+            <!-- #endregion -->
         </div>
     </div>
 </div>
@@ -69,15 +73,18 @@
         <!-- Edit Column -->
         <ng-container matColumnDef="select">
             <mat-header-cell *matHeaderCellDef [ngClass]="!readonly ? 'selectWidthClass' : 'selectHideClass'">
-                <button *ngIf="!readonly" mat-icon-button (click)="addDevice()" class="remove" matTooltip="{{'device.property-add' | translate}}">
+                <!-- #region 定制化修改 -->
+                <!-- <button *ngIf="!readonly" mat-icon-button (click)="addDevice()" class="remove" matTooltip="{{'device.property-add' | translate}}">
                     <mat-icon>add</mat-icon>
-                </button>
+                </button> -->
+                <!-- #endregion -->
             </mat-header-cell>
             <mat-cell *matCellDef="let element" [ngClass]="!readonly ? 'selectWidthClass' : 'selectHideClass'">
                 <button *ngIf="!readonly" mat-icon-button (click)="onListDevice(element)" class="remove" matTooltip="{{'device.property-tags' | translate}}">
                     <mat-icon>link</mat-icon>
                 </button>
-                <button *ngIf="!readonly && !isServer(element)" mat-icon-button (click)="onEditDevice(element)" class="remove" matTooltip="{{'device.property-edit' | translate}}">
+                <!-- NOTE: 定制化修改-->
+                <button *ngIf="!readonly && !isReadOnlyDevice(element)" mat-icon-button (click)="onEditDevice(element)" class="remove" matTooltip="{{'device.property-edit' | translate}}">
                     <mat-icon>edit</mat-icon>
                 </button>
             </mat-cell>
@@ -116,12 +123,13 @@
         <ng-container matColumnDef="remove">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button *ngIf="!readonly && !isServer(element)" mat-icon-button (click)="$event.stopPropagation();onRemoveDevice(element)" class="remove" matTooltip="{{'device.property-remove' | translate}}">
+                <!-- NOTE: 定制化修改-->
+                <button *ngIf="!readonly && !isReadOnlyDevice(element)" mat-icon-button (click)="$event.stopPropagation();onRemoveDevice(element)" class="remove" matTooltip="{{'device.property-remove' | translate}}">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-cell>
         </ng-container>
-    
+
         <mat-header-row *matHeaderRowDef="displayedColumns" [ngStyle]="{'min-width.px': tableWidth}"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;" class="my-mat-row" [ngStyle]="{'min-width.px': tableWidth}"></mat-row>
     </mat-table>

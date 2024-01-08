@@ -134,7 +134,6 @@ export class ShapesComponent extends GaugeBaseComponent {
         if (gaugeStatus.actionRef?.animr) {
             gaugeStatus.actionRef?.animr.unschedule();
         }
-
         if (ShapesComponent.actionsType[type] === ShapesComponent.actionsType.clockwise) {
             gaugeStatus.actionRef = ShapesComponent.startRotateAnimationShape(element, type, 360);
         } else if (ShapesComponent.actionsType[type] === ShapesComponent.actionsType.anticlockwise) {

@@ -81,13 +81,13 @@
                     </div>
                 </div>
                 <div *ngSwitchCase="deviceType.BACnet">
-                    <div class="my-form-field"
+                    <div class="my-form-field" 
                          style="display: block;margin-bottom: 10px;">
                         <span>{{'device.property-interface-address' | translate}}</span>
                         <input [(ngModel)]="data.device.property.address"
                                placeholder="{{'device.property-interface-address-ph' | translate}}"
                                class="address"
-                               type="ip"
+                               type="ip" 
                                (click)="onAddressChanged()">
                     </div>
                     <div class="my-form-field block mb10">
@@ -101,7 +101,7 @@
                     <div class="my-form-field"
                          style="display: inline-block;margin-bottom: 10px;">
                         <span>{{'device.property-adpu-timeout' | translate}}</span>
-                        <input numberOnly
+                        <input numberOnly 
                                [(ngModel)]="data.device.property.adpuTimeout"
                                placeholder="{{'device.property-adpu-timeout-ph' | translate}}"
                                class="adpu"
@@ -314,17 +314,6 @@
                         </mat-expansion-panel>
                     </div>
                 </div>
-                <div *ngSwitchCase="deviceType.ASmartEquipment">
-                    <!-- 使用 address 存储设备编码 -->
-                    <div class="my-form-field" style="display: block;margin-bottom: 10px;">
-                        <span>{{'device.property-asmart-equip' | translate}}</span>
-                        <mat-select [(value)]="data.device.property.address">
-                            <mat-option *ngFor="let equip of data.equips" [value]="equip.equipmentCode">
-                                {{ equip.equipmentName }}
-                            </mat-option>
-                        </mat-select>
-                    </div>
-                </div>
                 <div *ngSwitchCase="deviceType.EthernetIP">
                     <div class="my-form-field" style="display: inline-block; margin-bottom: 10px;">
                         <span>{{'device.property-address-port' | translate}}</span>
@@ -340,7 +329,7 @@
                             <input numberOnly [(ngModel)]="data.device.property.slot" style="width: 20px; margin-left: 5px;" type="text">
                         </div>
                     </div>
-                </div>
+                </div>                
             </div>
         </div>
     </div>

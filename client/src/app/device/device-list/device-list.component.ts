@@ -13,7 +13,6 @@ import { ToastrService } from 'ngx-toastr';
 import { TagPropertyComponent } from './../tag-property/tag-property.component';
 import { ITagOption, TagOptionsComponent } from './../tag-options/tag-options.component';
 import { TopicPropertyComponent } from './../topic-property/topic-property.component';
-import { EquipPropertyComponent } from './../equip-property/equip-property.component';
 import { Tag, Device, DeviceType, TAG_PREFIX } from '../../_models/device';
 import { ProjectService } from '../../_services/project.service';
 import { HmiService } from '../../_services/hmi.service';
@@ -181,8 +180,6 @@ export class DeviceListComponent implements OnInit, AfterViewInit {
     onEditRow(row) {
         if (this.deviceSelected.type === DeviceType.MQTTclient) {
             this.editTopics(row);
-        } else if (this.deviceSelected.type === DeviceType.ASmartEquipment) {
-            this.editEquipTags(row);
         } else {
             this.editTag(row, false);
         }
@@ -198,8 +195,6 @@ export class DeviceListComponent implements OnInit, AfterViewInit {
             this.addOpcTags(null);
         } else if (this.deviceSelected.type === DeviceType.MQTTclient) {
             this.editTopics();
-        } else if (this.deviceSelected.type === DeviceType.ASmartEquipment) {
-            this.editEquipTags();
         } else {
             let tag = new Tag(Utils.getGUID(TAG_PREFIX));
             this.editTag(tag, true);
@@ -407,22 +402,6 @@ export class DeviceListComponent implements OnInit, AfterViewInit {
             dialogRef.afterClosed().subscribe(result => {
             });
         }
-    }
-
-    editEquipTags(topic: Tag = null){
-        let dialogRef = this.dialog.open(EquipPropertyComponent, {
-            panelClass: 'dialog-property',
-            data: { device: this.deviceSelected, devices: Object.values(this.devices) },
-            position: { top: '60px' }
-        });
-        dialogRef.componentInstance.invokeSubscribe = (oldtopic, newtopics) => {
-            // this.addTopicSubscription(oldtopic, newtopics);
-        };
-        dialogRef.componentInstance.invokePublish = (oldtopic, newtopic) => {
-            // this.addTopicToPublish(oldtopic, newtopic);
-        };
-        dialogRef.afterClosed().subscribe(result => {
-        });
     }
 
     onCopyTagToClipboard(tag: Tag) {

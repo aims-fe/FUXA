@@ -29,7 +29,7 @@ module.exports = {
 
         /**
          * GET Project data
-         * Take from project storage and reply
+         * Take from project storage and reply 
          */
         prjApp.get("/api/project", secureFnc, function(req, res) {
             var groups = checkGroupsFnc(req);
@@ -113,7 +113,7 @@ module.exports = {
 
         /**
          * GET Project demo data
-         * Take the project demo file from server folder
+         * Take the project demo file from server folder 
          */
         prjApp.get("/api/projectdemo", secureFnc, function (req, res) {
             const data = runtime.project.getProjectDemo();
@@ -129,7 +129,7 @@ module.exports = {
 
         /**
          * GET Device property like security
-         * Take from project storage and reply
+         * Take from project storage and reply 
          */
         prjApp.get("/api/device", secureFnc, function(req, res) {
             var groups = checkGroupsFnc(req);
@@ -181,7 +181,7 @@ module.exports = {
                         res.status(400).json({error:"unexpected_error", message: err});
                         runtime.logger.error("api post device: " + err);
                     }
-                });
+                });                
             }
         });
 

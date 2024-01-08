@@ -228,7 +228,6 @@ export class EditorComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.setMode('select', false);
                     }, 700);
                     this.checkSvgElementsMap(true);
-                    // this.hmiService.addGauge(this.hmi, eleadded);
                 },
                 (eleremoved) => {
                     this.onRemoveElement(eleremoved);
@@ -663,7 +662,7 @@ export class EditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private onCopyAndPaste(copiedPasted: CopiedAndPasted) {
         if (copiedPasted?.copy?.length && copiedPasted?.past?.length) {
-            const copied = copiedPasted.copy.filter(element => element !== null);
+            const copied = copiedPasted.copy.filter(element => element !== null && !element?.symbols);
             const pasted = copiedPasted.past.filter(element => element !== null);
             if (copied.length == copiedPasted.past.length) {
                 let names = Object.values(this.currentView.items).map(gs => gs.name);
@@ -1367,7 +1366,7 @@ export class EditorComponent implements OnInit, AfterViewInit, OnDestroy {
                     names: names
                 }
             });
-        } else if (dlgType === GaugeDialogType.Table) {
+        } else if (dlgType === GaugeDialogType.Table || dlgType === GaugeDialogType.Panel) {
             this.gaugeDialog.type = dlgType;
             this.gaugeDialog.data = {
                 settings: tempsettings, dlgType: dlgType, names: names
@@ -1538,7 +1537,7 @@ export class EditorComponent implements OnInit, AfterViewInit, OnDestroy {
 }
 
 interface CopiedAndPasted {
-    copy: HTMLElement[];
+    copy: any[];
     past: HTMLElement[];
 }
 

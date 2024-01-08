@@ -49,7 +49,6 @@ import { DevicePropertyComponent } from './device/device-property/device-propert
 import { TagPropertyComponent } from './device/tag-property/tag-property.component';
 import { TagOptionsComponent } from './device/tag-options/tag-options.component';
 import { TopicPropertyComponent } from './device/topic-property/topic-property.component';
-import { EquipPropertyComponent } from './device/equip-property/equip-property.component';
 import { DeviceListComponent, DialogTagName } from './device/device-list/device-list.component';
 import { DeviceMapComponent } from './device/device-map/device-map.component';
 import { FuxaViewComponent } from './fuxa-view/fuxa-view.component';
@@ -120,7 +119,7 @@ import { HtmlTableComponent } from './gauges/controls/html-table/html-table.comp
 import { HtmlSwitchComponent } from './gauges/controls/html-switch/html-switch.component';
 import { GaugeProgressComponent } from './gauges/controls/gauge-progress/gauge-progress.component';
 import { GaugeSemaphoreComponent } from './gauges/controls/gauge-semaphore/gauge-semaphore.component';
-import { UsersComponent, DialogUser } from './users/users.component';
+import { UsersComponent } from './users/users.component';
 import { LoginComponent } from './login/login.component';
 import { DialogUserInfo } from './home/home.component';
 import { ShapesComponent } from './gauges/shapes/shapes.component';
@@ -171,6 +170,11 @@ import { MyFileService } from './_services/my-file.service';
 import { TagsIdsConfigComponent } from './editor/tags-ids-config/tags-ids-config.component';
 import { MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipDefaultOptions } from '@angular/material/tooltip';
 import { HtmlImageComponent } from './gauges/controls/html-image/html-image.component';
+import { NgxSchedulerComponent } from './gui-helpers/ngx-scheduler/ngx-scheduler.component';
+import { FlexDeviceTagComponent } from './gauges/gauge-property/flex-device-tag/flex-device-tag.component';
+import { PanelComponent } from './gauges/controls/panel/panel.component';
+import { PanelPropertyComponent } from './gauges/controls/panel/panel-property/panel-property.component';
+import { UserEditComponent } from './users/user-edit/user-edit.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -196,7 +200,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         TagPropertyComponent,
         TagOptionsComponent,
         TopicPropertyComponent,
-        EquipPropertyComponent,
         DevicePropertyComponent,
         DeviceWebapiPropertyDialogComponent,
         LayoutPropertyComponent,
@@ -243,6 +246,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         TesterComponent,
         TutorialComponent,
         FlexInputComponent,
+        FlexDeviceTagComponent,
         FlexAuthComponent,
         FlexHeadComponent,
         FlexEventComponent,
@@ -285,10 +289,11 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         LogsViewComponent,
         NgxGaugeComponent,
         NgxNouisliderComponent,
+        NgxSchedulerComponent,
         DialogChartLine,
         DialogGraphSource,
         UsersComponent,
-        DialogUser,
+        UserEditComponent,
         LoginComponent,
         DialogUserInfo,
         ViewComponent,
@@ -310,7 +315,9 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         ReportItemTextComponent,
         ReportItemTableComponent,
         ReportItemAlarmsComponent,
-        ReportItemChartComponent
+        ReportItemChartComponent,
+        PanelComponent,
+        PanelPropertyComponent
     ],
     imports: [
         BrowserModule,
@@ -376,7 +383,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         Define,
         AuthGuard,
         ToastNotifierService,
-        MyFileService,
         MyFileService,
         {provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults}
     ],
