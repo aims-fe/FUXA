@@ -13,7 +13,7 @@
 	<mat-sidenav #matsidenav *ngIf="showNavigation && showSidenav" class="sidenav" [mode]="showSidenav">
 		<app-sidenav #sidenav [sidenav]="matsidenav" (goToPage)="onGoToPage($event)" (goToLink)="onGoToLink($event)"></app-sidenav>
 	</mat-sidenav>
-	<mat-sidenav-content [style.background-color]="backgroudColor" (click)="checkToCloseSideNav()">
+	<mat-sidenav-content style="background-color: transparent;" (click)="checkToCloseSideNav()">
 		<!-- NOTE: 定制化修改，强制隐藏导航 -->
 		<div *ngIf="showNavigation" class="header" [style.background-color]="layoutHeader.bkcolor" [style.color]="layoutHeader.fgcolor" style="display: none;">
 			<div *ngIf="showSidenav && showSidenav !== 'side'" class="sidenav-toogle">
