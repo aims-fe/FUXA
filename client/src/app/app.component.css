@@ -13,14 +13,14 @@
 .work-editor {
     background-color:#FFFFFF;
     height: calc(100% - (46px));
-    /* NOTE: 定制化修改 */
-    background-color: transparent;
     height: 100%;
     min-width: 800px;
 }
 
 .work-home {
     background-color:#FFFFFF;
+    /* NOTE: 定制化修改 */
+    background-color: transparent;
     height: 100%;
     min-width: 800px;
 }

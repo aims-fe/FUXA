@@ -1,25 +1,31 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
-import * as io from 'socket.io-client';
+import { Injectable, Output, EventEmitter } from "@angular/core";
+import * as io from "socket.io-client";
 
-import { environment } from '../../environments/environment';
-import { Tag, DeviceType } from '../_models/device';
-import { Hmi, Variable, GaugeSettings, DaqQuery, DaqResult, GaugeEventSetValueType } from '../_models/hmi';
-import { AlarmQuery } from '../_models/alarm';
-import { ProjectService } from '../_services/project.service';
-import { EndPointApi } from '../_helpers/endpointapi';
-import { Utils } from '../_helpers/utils';
-import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject } from 'rxjs';
-import { AuthService, UserProfile } from './auth.service';
-import { ASmartService } from './asmart.service';
+import { environment } from "../../environments/environment";
+import { Tag, DeviceType } from "../_models/device";
+import {
+    Hmi,
+    Variable,
+    GaugeSettings,
+    DaqQuery,
+    DaqResult,
+    GaugeEventSetValueType,
+} from "../_models/hmi";
+import { AlarmQuery } from "../_models/alarm";
+import { ProjectService } from "../_services/project.service";
+import { EndPointApi } from "../_helpers/endpointapi";
+import { Utils } from "../_helpers/utils";
+import { ToastrService } from "ngx-toastr";
+import { TranslateService } from "@ngx-translate/core";
+import { BehaviorSubject } from "rxjs";
+import { AuthService, UserProfile } from "./auth.service";
+import { ASmartService } from "./asmart.service";
 
-import utils from '../../utils';
-import equipmentUtils from '../../utils/equipmentUtils';
+import utils from "../../utils";
+import equipmentUtils from "../../utils/equipmentUtils";
 
 @Injectable()
 export class HmiService {
-
     @Output() onVariableChanged: EventEmitter<Variable> = new EventEmitter();
     @Output() onDeviceChanged: EventEmitter<boolean> = new EventEmitter();
     @Output() onDeviceBrowse: EventEmitter<any> = new EventEmitter();
@@ -35,7 +41,7 @@ export class HmiService {
 
     onServerConnection$ = new BehaviorSubject<boolean>(false);
 
-    public static separator = '^~^';
+    public static separator = "^~^";
     public hmi: Hmi;
     viewSignalGaugeMap = new ViewSignalGaugeMap();
     variables = {};
@@ -43,20 +49,27 @@ export class HmiService {
     private socket;
     private equips = {};
     private asmartSocket;
-    private endPointConfig: string = EndPointApi.getURL();//"http://localhost:1881";
+    private endPointConfig: string = EndPointApi.getURL(); //"http://localhost:1881";
     private bridge: any = null;
 
-    private addFunctionType = Utils.getEnumKey(GaugeEventSetValueType, GaugeEventSetValueType.add);
-    private removeFunctionType = Utils.getEnumKey(GaugeEventSetValueType, GaugeEventSetValueType.remove);
+    private addFunctionType = Utils.getEnumKey(
+        GaugeEventSetValueType,
+        GaugeEventSetValueType.add
+    );
+    private removeFunctionType = Utils.getEnumKey(
+        GaugeEventSetValueType,
+        GaugeEventSetValueType.remove
+    );
     private homeTagsSubscription = [];
     private viewsTagsSubscription = [];
 
-    constructor(public projectService: ProjectService,
+    constructor(
+        public projectService: ProjectService,
         public asmartService: ASmartService,
         private translateService: TranslateService,
         private authService: AuthService,
-        private toastr: ToastrService) {
-
+        private toastr: ToastrService
+    ) {
         // this.initSocket();
         this.initASmartSocket();
 
@@ -66,7 +79,7 @@ export class HmiService {
         });
 
         this.authService.currentUser$.subscribe((userProfile: UserProfile) => {
-        //    this.initSocket(userProfile?.token);
+            //    this.initSocket(userProfile?.token);
         });
     }
 
@@ -92,20 +105,30 @@ export class HmiService {
         if (!this.variables[sigId]) {
             this.variables[sigId] = new Variable(sigId, null, null);
         }
-        this.variables[sigId].value = this.getValueInFunction(this.variables[sigId].value, value, fnc);
+        this.variables[sigId].value = this.getValueInFunction(
+            this.variables[sigId].value,
+            value,
+            fnc
+        );
         if (this.socket) {
             let device = this.projectService.getDeviceFromTagId(sigId);
             if (device) {
-                this.variables[sigId]['source'] = device.id;
+                this.variables[sigId]["source"] = device.id;
             }
             if (device?.type === DeviceType.internal) {
                 this.variables[sigId].timestamp = new Date().getTime();
                 this.setSignalValue(this.variables[sigId]);
             } else {
-                this.socket.emit(IoEventTypes.DEVICE_VALUES, { cmd: 'set', var: this.variables[sigId], fnc: [fnc, value] });
+                this.socket.emit(IoEventTypes.DEVICE_VALUES, {
+                    cmd: "set",
+                    var: this.variables[sigId],
+                    fnc: [fnc, value],
+                });
             }
         } else if (this.bridge) {
-            this.bridge.setDeviceValue(this.variables[sigId], { fnc: [fnc, value] });
+            this.bridge.setDeviceValue(this.variables[sigId], {
+                fnc: [fnc, value],
+            });
         } else if (!environment.serverEnabled) {
             // for demo, only frontend
             this.setSignalValue(this.variables[sigId]);
@@ -123,7 +146,9 @@ export class HmiService {
      */
     private getValueInFunction(current: any, value: string, fnc: string) {
         try {
-            if (!fnc) {return value;}
+            if (!fnc) {
+                return value;
+            }
             if (!current) {
                 current = 0;
             }
@@ -145,10 +170,13 @@ export class HmiService {
      * @returns
      */
     initClient(bridge?: any) {
-        if (!bridge) {return false;}
+        if (!bridge) {
+            return false;
+        }
         this.bridge = bridge;
         if (this.bridge) {
-            this.bridge.onDeviceValues = (tags: Variable[]) => this.onDeviceValues(tags);
+            this.bridge.onDeviceValues = (tags: Variable[]) =>
+                this.onDeviceValues(tags);
             this.askDeviceValues();
             return true;
         }
@@ -178,27 +206,43 @@ export class HmiService {
         this.socket?.close();
         // #region 定制化修改
         // this.socket = io(`${this.endPointConfig}/?token=${token}`);
-        this.socket = io(`${this.endPointConfig}?access_token=${utils.LocationSearch.getInstance().getURLSearchParam('access_token')}`, {
-            path: '/socket.io'
-        });
+        this.socket = io(
+            `${
+                this.endPointConfig
+            }?access_token=${utils.LocationSearch.getInstance().getURLSearchParam(
+                "access_token"
+            )}`,
+            {
+                path: "/socket.io",
+            }
+        );
         // #regionend
 
-        this.socket.on('connect', () => {
+        this.socket.on("connect", () => {
             this.onServerConnection$.next(true);
         });
-        this.socket.on('disconnect', () => {
+        this.socket.on("disconnect", () => {
             this.onServerConnection$.next(false);
         });
         // devicse status
         this.socket.on(IoEventTypes.DEVICE_STATUS, (message) => {
             this.onDeviceChanged.emit(message);
-            if (message.status === 'connect-error' && this.hmi?.layout?.show_connection_error) {
+            if (
+                message.status === "connect-error" &&
+                this.hmi?.layout?.show_connection_error
+            ) {
                 let name = message.id;
                 let device = this.projectService.getDeviceFromId(message.id);
-                if (device) {name = device.name;}
-                let msg = '';
-                this.translateService.get('msg.device-connection-error', { value: name }).subscribe((txt: string) => { msg = txt; });
-                this.toastr.error(msg, '', {
+                if (device) {
+                    name = device.name;
+                }
+                let msg = "";
+                this.translateService
+                    .get("msg.device-connection-error", { value: name })
+                    .subscribe((txt: string) => {
+                        msg = txt;
+                    });
+                this.toastr.error(msg, "", {
                     timeOut: 3000,
                     closeButton: true,
                     // disableTimeOut: true
@@ -263,7 +307,7 @@ export class HmiService {
      */
     public askDeviceStatus() {
         if (this.socket) {
-            this.socket.emit(IoEventTypes.DEVICE_STATUS, 'get');
+            this.socket.emit(IoEventTypes.DEVICE_STATUS, "get");
         }
     }
 
@@ -302,7 +346,7 @@ export class HmiService {
      */
     public askHostInterface() {
         if (this.socket) {
-            this.socket.emit(IoEventTypes.HOST_INTERFACES, 'get');
+            this.socket.emit(IoEventTypes.HOST_INTERFACES, "get");
         }
     }
 
@@ -311,7 +355,7 @@ export class HmiService {
      */
     public askDeviceValues() {
         if (this.socket) {
-            this.socket.emit(IoEventTypes.DEVICE_VALUES, 'get');
+            this.socket.emit(IoEventTypes.DEVICE_VALUES, "get");
         } else if (this.bridge) {
             this.bridge.getDeviceValues(null);
         }
@@ -322,7 +366,7 @@ export class HmiService {
      */
     public askAlarmsStatus() {
         if (this.socket) {
-            this.socket.emit(IoEventTypes.ALARMS_STATUS, 'get');
+            this.socket.emit(IoEventTypes.ALARMS_STATUS, "get");
         }
     }
 
@@ -363,7 +407,9 @@ export class HmiService {
 
     private tagsSubscribe() {
         if (this.socket) {
-            const mergedArray = this.viewsTagsSubscription.concat(this.homeTagsSubscription);
+            const mergedArray = this.viewsTagsSubscription.concat(
+                this.homeTagsSubscription
+            );
             let msg = { tagsId: [...new Set(mergedArray)] };
             this.socket.emit(IoEventTypes.DEVICE_TAGS_SUBSCRIBE, msg);
         }
@@ -400,7 +446,11 @@ export class HmiService {
     addSignal(signalId: string, ga: GaugeSettings) {
         // add to variable list
         if (!this.variables[signalId]) {
-            this.variables[signalId] = new Variable(signalId, null, this.projectService.getDeviceFromTagId(signalId));
+            this.variables[signalId] = new Variable(
+                signalId,
+                null,
+                this.projectService.getDeviceFromTagId(signalId)
+            );
         }
     }
 
@@ -410,11 +460,19 @@ export class HmiService {
      * @param signalId
      * @param ga
      */
-    addSignalGaugeToMap(domViewId: string, signalId: string, ga: GaugeSettings) {
+    addSignalGaugeToMap(
+        domViewId: string,
+        signalId: string,
+        ga: GaugeSettings
+    ) {
         this.viewSignalGaugeMap.add(domViewId, signalId, ga);
         // add to variable list
         if (!this.variables[signalId]) {
-            this.variables[signalId] = new Variable(signalId, null, this.projectService.getDeviceFromTagId(signalId));
+            this.variables[signalId] = new Variable(
+                signalId,
+                null,
+                this.projectService.getDeviceFromTagId(signalId)
+            );
         }
     }
 
@@ -426,10 +484,11 @@ export class HmiService {
     removeSignalGaugeFromMap(domViewId: string) {
         let sigsIdremoved = this.viewSignalGaugeMap.getSignalIds(domViewId);
         let result = {};
-        sigsIdremoved.forEach(sigid => {
-            let gaugesSettings: GaugeSettings[] = this.viewSignalGaugeMap.signalsGauges(domViewId, sigid);
+        sigsIdremoved.forEach((sigid) => {
+            let gaugesSettings: GaugeSettings[] =
+                this.viewSignalGaugeMap.signalsGauges(domViewId, sigid);
             if (gaugesSettings) {
-                result[sigid] = gaugesSettings.map(gs => gs.id);
+                result[sigid] = gaugesSettings.map((gs) => gs.id);
             }
         });
         this.viewSignalGaugeMap.remove(domViewId);
@@ -442,7 +501,9 @@ export class HmiService {
      * @param sigid
      */
     getMappedSignalsGauges(domViewId: string, sigid: string): GaugeSettings[] {
-        return Object.values(this.viewSignalGaugeMap.signalsGauges(domViewId, sigid));
+        return Object.values(
+            this.viewSignalGaugeMap.signalsGauges(domViewId, sigid)
+        );
     }
 
     /**
@@ -451,16 +512,20 @@ export class HmiService {
      */
     getMappedVariables(fulltext: boolean): Variable[] {
         let result: Variable[] = [];
-        this.viewSignalGaugeMap.getAllSignalIds().forEach(sigid => {
+        this.viewSignalGaugeMap.getAllSignalIds().forEach((sigid) => {
             if (this.variables[sigid]) {
                 let toadd = this.variables[sigid];
                 if (fulltext) {
                     toadd = Object.assign({}, this.variables[sigid]);
-                    let device = this.projectService.getDeviceFromTagId(toadd.id);
+                    let device = this.projectService.getDeviceFromTagId(
+                        toadd.id
+                    );
                     if (device) {
-                        toadd['source'] = device.name;
+                        toadd["source"] = device.name;
                         if (device.tags[toadd.id]) {
-                            toadd['name'] = this.getTagLabel(device.tags[toadd.id]);
+                            toadd["name"] = this.getTagLabel(
+                                device.tags[toadd.id]
+                            );
                         }
                     }
                 }
@@ -476,7 +541,9 @@ export class HmiService {
      * @param fulltext
      */
     getMappedVariable(sigid: string, fulltext: boolean): Variable {
-        if (!this.variables[sigid]) {return null;}
+        if (!this.variables[sigid]) {
+            return null;
+        }
 
         if (this.variables[sigid]) {
             let result = this.variables[sigid];
@@ -484,9 +551,11 @@ export class HmiService {
                 result = Object.assign({}, this.variables[sigid]);
                 let device = this.projectService.getDeviceFromTagId(result.id);
                 if (device) {
-                    result['source'] = device.name;
+                    result["source"] = device.name;
                     if (device.tags[result.id]) {
-                        result['name'] = this.getTagLabel(device.tags[result.id]);
+                        result["name"] = this.getTagLabel(
+                            device.tags[result.id]
+                        );
                     }
                 }
             }
@@ -513,7 +582,7 @@ export class HmiService {
         let chart = this.projectService.getChart(id);
         if (chart) {
             let varsId = [];
-            chart.lines.forEach(line => {
+            chart.lines.forEach((line) => {
                 varsId.push(line.id);
             });
             return varsId;
@@ -528,7 +597,7 @@ export class HmiService {
         let graph = this.projectService.getGraph(id);
         if (graph) {
             let varsId = [];
-            graph.sources.forEach(source => {
+            graph.sources.forEach((source) => {
                 varsId.push(source.id);
             });
             return varsId;
@@ -567,7 +636,10 @@ export class HmiService {
         switch (message.command) {
             case ScriptCommandEnum.SETVIEW:
                 if (message.params && message.params.length) {
-                    this.onGoTo.emit(<ScriptSetView>{ viewName: message.params[0], force: message.params[1] });
+                    this.onGoTo.emit(<ScriptSetView>{
+                        viewName: message.params[0],
+                        force: message.params[1],
+                    });
                 }
                 break;
         }
@@ -579,43 +651,79 @@ export class HmiService {
             return;
         }
         this.asmartSocket?.close();
-        this.asmartSocket = io(`${this.endPointConfig}?access_token=${utils.LocationSearch.getInstance().getURLSearchParam('access_token')}`, {
-            path: environment.asmartSocketIO
-        });
+        this.asmartSocket = io(
+            `${
+                this.endPointConfig
+            }?access_token=${utils.LocationSearch.getInstance().getURLSearchParam(
+                "access_token"
+            )}`,
+            {
+                path: environment.asmartSocketIO,
+            }
+        );
 
-        this.asmartSocket.on('connect', () => {
+        this.asmartSocket.on("connect", () => {
             this.onServerConnection$.next(true);
             this.updateEquips(this.projectService.getDevices());
         });
-        this.asmartSocket.on('disconnect', () => {
+        this.asmartSocket.on("disconnect", () => {
             this.onServerConnection$.next(false);
         });
 
-
-        this.asmartSocket.on('equipment.measure', this.onEquipMeasure);
-
-        this.asmartSocket.on('equipment.metric', (message) => {
-            debugger;
-        });
-
-        this.asmartSocket.on('equipment.status', () => {
-            debugger;
-            // 更新实时数据
-        });
+        this.asmartSocket.on("equipment.measure", this.onEquipMeasure);
+        this.asmartSocket.on("equipment.metric", this.onEquipMetric);
+        this.asmartSocket.on("equipment.status", this.onEquipStatus);
     }
 
-    private updateEquips(devices){
+    private updateEquips(devices) {
+        const { addedCodes, removedCodes } = this.getEquipCodes(devices);
+        if (removedCodes.length) {
+            const msg = JSON.stringify({ equipmentCodes: removedCodes });
+            this.asmartSocket.emit("equipment.measure.remove", msg);
+            this.asmartSocket.emit("equipment.status.remove", msg);
+            this.asmartSocket.emit("equipment.metric.remove", msg);
+            // TODO: 清理数据
+        }
+        if (addedCodes.length) {
+            const msg = JSON.stringify({ equipmentCodes: addedCodes });
+            this.asmartSocket.emit("equipment.measure.add", msg);
+            this.asmartSocket.emit("equipment.metric.add", msg);
+            this.asmartSocket.emit("equipment.status.add", msg);
+            this.getEquipsValues(addedCodes);
+        }
+        // NOTE: 设备状态更新需要调整
+        // ids.forEach((id) =>
+        //     this.onDeviceChanged?.emit({ id, status: 'connect-ok' } as any)
+        // );
+    }
+
+    private getEquipCodes(devices) {
+        const searchParams =
+            utils.LocationSearch.getInstance().getURLSearchParams();
+        const modelCode = searchParams.get("modelCode");
+        if ("equipment" === modelCode) {
+            return this.getEquipCodesByEquipCode(
+                searchParams.get("instanceCode")
+            );
+        } else if ("equipmentModel" === modelCode) {
+            return this.getEquipCodesByEquipCode(searchParams.get("extraCode"));
+        }
+        return this.getEquipCodesByDevices(devices);
+    }
+
+    private getEquipCodesByDevices(devices) {
         const prevEqupis = JSON.parse(JSON.stringify(this.equips));
         const nextEqupis = {};
         const addedCodes = [];
         const removedCodes = [];
-        const ids = [];
         for (let id in devices) {
             const device = devices[id];
-            if (device?.type !== DeviceType.ASmartEquipment){
+            if (
+                device?.type !== DeviceType.ASmartEquipment ||
+                !device.property.address
+            ) {
                 continue;
             }
-            ids.push(id);
             nextEqupis[id] = JSON.parse(JSON.stringify(device));
             if (prevEqupis[id]) {
                 delete prevEqupis[id];
@@ -626,37 +734,42 @@ export class HmiService {
         for (let id in prevEqupis) {
             removedCodes.push(prevEqupis[id].property.address);
         }
-        if ((0 === addedCodes.length && 0 === removedCodes.length) || true !== this.asmartSocket?.connected) {
-            return;
-        }
-        if (removedCodes.length) {
-            this.asmartSocket.emit('equipment.measure.remove', JSON.stringify({equipmentCodes:removedCodes}));
-        }
-        if (addedCodes.length) {
-            this.asmartSocket.emit('equipment.measure.add', JSON.stringify({equipmentCodes:addedCodes}));
-
-            addedCodes.forEach(code => this.getEquipValues(code)) ;
-        }
-        ids.forEach((id) => this.onDeviceChanged?.emit({ id, status: 'connect-ok' } as any));
         this.equips = nextEqupis;
+        return { addedCodes, removedCodes };
     }
 
-    getEquipValues(equipCode){
-        this.asmartService.getEquipValues(equipCode).subscribe((data) => {
-            console.log(data);
-            equipmentUtils.forEachMeasureProp(data, (val) => {
+    private getEquipCodesByEquipCode(equipCode) {
+        const prevEqupis = JSON.parse(JSON.stringify(this.equips));
+        const addedCodes = [];
+        const removedCodes = [];
+        if (!prevEqupis[equipCode]) {
+            addedCodes.push(equipCode);
+        } else {
+            delete prevEqupis[equipCode];
+        }
+        for (let code in prevEqupis) {
+            removedCodes.push(code);
+        }
+
+        this.equips = { [equipCode]: equipCode };
+        return { addedCodes, removedCodes };
+    }
+
+    getEquipsValues(equipCodes) {
+        this.asmartService.getEquipsValues(equipCodes).subscribe((data) => {
+            equipmentUtils.forEachRealtime(data, (val) => {
                 this.updateEquipValue(val);
             });
         });
     }
 
-    updateEquipValue(value){
+    updateEquipValue(value) {
         if (!this.variables[value.id]) {
             this.variables[value.id] = new Variable(value.id, null, null);
         }
         this.variables[value.id].value = value.value;
         this.variables[value.id].timestamp = value.timestamp;
-        console.log(value.id);
+        console.log(`${value.id}: ${value.value}`);
         this.setSignalValue(this.variables[value.id]);
     }
 
@@ -666,7 +779,17 @@ export class HmiService {
         });
     };
 
+    onEquipMetric = (message) => {
+        equipmentUtils.forEachMetricMsg(message, (metric) => {
+            this.updateEquipValue(metric);
+        });
+    };
 
+    onEquipStatus = (message) => {
+        equipmentUtils.forEachMetricMsg(message, (status) => {
+            this.updateEquipValue(status);
+        });
+    };
 }
 
 class ViewSignalGaugeMap {
@@ -702,8 +825,8 @@ class ViewSignalGaugeMap {
 
     public getAllSignalIds() {
         let result: string[] = [];
-        Object.values(this.views).forEach(evi => {
-            Object.keys(evi).forEach(key => {
+        Object.values(this.views).forEach((evi) => {
+            Object.keys(evi).forEach((key) => {
                 if (result.indexOf(key) === -1) {
                     result.push(key);
                 }
@@ -714,26 +837,26 @@ class ViewSignalGaugeMap {
 }
 
 export enum IoEventTypes {
-    DEVICE_STATUS = 'device-status',
-    DEVICE_PROPERTY = 'device-property',
-    DEVICE_VALUES = 'device-values',
-    DEVICE_BROWSE = 'device-browse',
-    DEVICE_NODE_ATTRIBUTE = 'device-node-attribute',
-    DEVICE_WEBAPI_REQUEST = 'device-webapi-request',
-    DEVICE_TAGS_REQUEST = 'device-tags-request',
-    DEVICE_TAGS_SUBSCRIBE = 'device-tags-subscribe',
-    DEVICE_TAGS_UNSUBSCRIBE = 'device-tags-unsubscribe',
-    DAQ_QUERY = 'daq-query',
-    DAQ_RESULT = 'daq-result',
-    DAQ_ERROR = 'daq-error',
-    ALARMS_STATUS = 'alarms-status',
-    HOST_INTERFACES = 'host-interfaces',
-    SCRIPT_CONSOLE = 'script-console',
-    SCRIPT_COMMAND = 'script-command'
+    DEVICE_STATUS = "device-status",
+    DEVICE_PROPERTY = "device-property",
+    DEVICE_VALUES = "device-values",
+    DEVICE_BROWSE = "device-browse",
+    DEVICE_NODE_ATTRIBUTE = "device-node-attribute",
+    DEVICE_WEBAPI_REQUEST = "device-webapi-request",
+    DEVICE_TAGS_REQUEST = "device-tags-request",
+    DEVICE_TAGS_SUBSCRIBE = "device-tags-subscribe",
+    DEVICE_TAGS_UNSUBSCRIBE = "device-tags-unsubscribe",
+    DAQ_QUERY = "daq-query",
+    DAQ_RESULT = "daq-result",
+    DAQ_ERROR = "daq-error",
+    ALARMS_STATUS = "alarms-status",
+    HOST_INTERFACES = "host-interfaces",
+    SCRIPT_CONSOLE = "script-console",
+    SCRIPT_COMMAND = "script-command",
 }
 
 const ScriptCommandEnum = {
-    SETVIEW: 'SETVIEW',
+    SETVIEW: "SETVIEW",
 };
 
 interface ScriptCommandMessage {
