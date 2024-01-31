@@ -38,7 +38,7 @@
         <!-- LEFT BAR -->
         <mat-drawer mode="side" opened="true" class="svg-sidenav leave-header-area" disableClose>
             <mat-accordion multi="true">
-                <mat-expansion-panel class="svg-workarea-leftbar-p" (opened)="panelsState.panelView=true;savePanelState()" (closed)="panelsState.panelView=false;savePanelState()"
+                <mat-expansion-panel class="svg-workarea-leftbar-p" style="display: none" (opened)="panelsState.panelView=true;savePanelState()" (closed)="panelsState.panelView=false;savePanelState()"
                     hideToggle="true" [expanded]="panelsState.panelView">
                     <mat-expansion-panel-header class="svg-workarea-leftbar-h">
                         <mat-panel-title>

@@ -1,5 +1,17 @@
 <div class="header-panel" *ngIf="editorMode">
-    <button mat-button title="{{'header.save-project' | translate}}" [matMenuTriggerFor]="prjview" #prjviewtrigger="matMenuTrigger" class="main-btn">
+    <button mat-button title="{{'dlg.setup-views' | translate}}" (click)="goTo('/editor')" class="main-btn">
+        <mat-icon>dashboard</mat-icon>
+    </button>
+    <button mat-button title="{{'dlg.setup-connections' | translate}}" (click)="goTo('/device')" class="main-btn">
+        <mat-icon>device_hub</mat-icon>
+    </button>
+    <button mat-button title="{{'header.save-project' | translate}}" (click)="onSaveProject()" class="main-btn">
+        <mat-icon aria-label="Save Project">save</mat-icon>
+    </button>
+    <!-- <button mat-button title="{{'header.save-project' | translate}}" (click)="onSaveProject()" class="main-btn">
+        <mat-icon aria-label="Save Project">save</mat-icon>
+    </button> -->
+    <!-- <button mat-button title="{{'header.save-project' | translate}}" [matMenuTriggerFor]="prjview" #prjviewtrigger="matMenuTrigger" class="main-btn">
         <mat-icon aria-label="Save Project">save</mat-icon>
     </button>
     <mat-menu #prjview="matMenu" class="leftbar-item-menu header-menu" yPosition="below" [overlapTrigger]="false">
@@ -15,7 +27,7 @@
     </mat-menu>
     <button mat-button title="{{'header.edit-project' | translate}}" class="main-btn" (click)="onSetup()">
         <mat-icon aria-label="Edit Views">settings</mat-icon>
-    </button>
+    </button> -->
 
 </div>
 
